@@ -1,0 +1,22 @@
+{
+    "ok": true, 
+    "result": [
+        {
+            "message": {
+                "chat": {
+                    "first_name": "", 
+                    "id": 123, 
+                    "type": "private"
+                }, 
+                "date": 1480325757, 
+                "from": {
+                    "first_name": "", 
+                    "id": 123
+                }, 
+                "message_id": 10, 
+                "text": "test"
+            }, 
+            "update_id": 655491830
+        }
+    ]
+}
