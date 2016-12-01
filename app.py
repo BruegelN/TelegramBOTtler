@@ -22,8 +22,8 @@ def main():
     # first register a callback before getting updates
     myBot.registerCallback(me, custom_callback)
     updates_json = myBot.getUpdates()
-    print json.dumps(updates_json, indent=4, sort_keys=True, ensure_ascii=False).encode('utf8')
     # print str(myBot.sendTelegramMessage(id=me, text=number))
+    print(json.dumps(updates_json, indent=4, sort_keys=True, ensure_ascii=False))
 
 if __name__ == "__main__":
     main()
