@@ -30,14 +30,16 @@ class TelegramBOTtler(object):
 
     def getUpdates(self):
         url = "https://api.telegram.org/bot"+self.__token+"/getUpdates"
-        # TODO: iterate over all results and check if callback for the user id exists
-        from_id = json_response["result"][0]["message"]["from"]["id"]
-        message_text = json_response["result"][0]["message"]["text"]
-        print "Callback for "+str(from_id)+" with text "+message_text
-        self.__callbacks[from_id](message_text)
-
         response = urlopen(url)
         json_response = json.loads(response.read().decode("utf-8")) 
+
+        for result in json_response["result"]:
+            try:
+                message_text = result["message"]["text"]
+                from_id = result["message"]["from"]["id"]
+                self.__callbacks[from_id](message_text, from_id=from_id)
+            except Exception as e:
+                pass
         return json_response
 
 

@@ -4,8 +4,10 @@ import sys
 import time as t
 
 
-def custom_callback(message):
-    print "got a message: "+message
+def custom_callback(text, from_id=0):
+    print ("From "+str(from_id)+" I got the following message: "+text)
+    myBot = TelegramBOTtler(token="Your token here")
+    myBot.sendTelegramMessage(id=from_id, text=text)
 
 
 def main():
