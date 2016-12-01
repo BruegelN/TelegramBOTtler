@@ -11,9 +11,8 @@ import json
 
 
 class TelegramBOTtler(object):
-    def __init__(self, token=None):
-        if token is None:
-            raise ValueError('Please provide a token')
+
+    def __init__(self, token):
         self.__token = token
         self.__callbacks = {}
 
