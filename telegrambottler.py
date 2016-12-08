@@ -75,4 +75,13 @@ class TelegramBOTtler(object):
         '''
         self.__callbacks[from_id] = callback_function
 
+    def deleteCallback(self, from_id):
+        '''
+        TODO: not yet tested
+        Removes the `callback_function` for the user with `from_id`.
+        Afterwards `callback_function` will get not called anymore
+        when the bot receives a message for user with `from_id`.
+        '''
+        self.__callbacks.pop(from_id)
+
         
