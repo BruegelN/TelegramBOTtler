@@ -9,6 +9,9 @@ def custom_callback(text, from_id=0):
     myBot = TelegramBOTtler(token="Your token here")
     myBot.sendTelegramMessage(id=from_id, text=text)
 
+def print_my_json(json_obj):
+    print(json.dumps(json_obj, indent=4, sort_keys=True, ensure_ascii=False))
+
 
 def main():
     me = 0
@@ -24,8 +27,13 @@ def main():
     # first register a callback before getting updates
     myBot.registerCallback(me, custom_callback)
     updates_json = myBot.getUpdates()
-    # print str(myBot.sendTelegramMessage(id=me, text=number))
-    print(json.dumps(updates_json, indent=4, sort_keys=True, ensure_ascii=False))
+    #print str(myBot.sendTelegramMessage(id=me, text="number"))
+    print_my_json(updates_json)
+    
+    # try second to make shure the callback get only called once for every message 
+    updates_json = myBot.getUpdates()
+    #print str(myBot.sendTelegramMessage(id=me, text="number"))
+    print_my_json(updates_json)
 
 if __name__ == "__main__":
     main()

@@ -13,6 +13,7 @@ import json
 class TelegramBOTtler(object):
 
     def __init__(self, token):
+        self.__update_id = 0 
         self.__token = token
         self.__callbacks = {}
 
@@ -36,7 +37,9 @@ class TelegramBOTtler(object):
             try:
                 message_text = result["message"]["text"]
                 from_id = result["message"]["from"]["id"]
-                self.__callbacks[from_id](message_text, from_id=from_id)
+                if result["update_id"] > self.__update_id:
+                     self.__update_id = result["update_id"]
+                     self.__callbacks[from_id](message_text, from_id=from_id)
             except Exception as e:
                 pass
         return json_response
