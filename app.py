@@ -19,18 +19,12 @@ def main():
         me = data["id"]
         bot_token = data["token"]
 
-
     myBot = TelegramBOTtler(token=bot_token)
     # first register a callback before getting updates
     myBot.registerCallback(me, custom_callback)
-    updates_json = myBot.getUpdates()
-    #print str(myBot.sendTelegramMessage(id=me, text="number"))
-    print_my_json(updates_json)
-    
-    # try second to make shure the callback get only called once for every message 
-    updates_json = myBot.getUpdates()
-    #print str(myBot.sendTelegramMessage(id=me, text="number"))
-    print_my_json(updates_json)
+    myBot.run()
+    t.sleep(30)
+    myBot.stop()
 
 if __name__ == "__main__":
     main()

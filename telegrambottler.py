@@ -1,5 +1,7 @@
 import sys
 import json
+import threading
+import time as t
 
 if sys.version_info[0] == 2:
     from urllib import urlopen
@@ -40,12 +42,13 @@ class TelegramBOTtler(object):
     A Python class which let's you connect to you Telegram bot via your token.
     You can send messages to other user as long as you have their `id`
     or receive messages and handle them with your custom callbacks.
-    TODO: still need to impl. somekind of run() method for continous polling.
     '''
     def __init__(self, token):
-        self.__update_id = 0
+        self.__update_id = 0 # TODO query latest update_id
         self.__token = token
         self.__callbacks = {}
+        self.__poolThread = None
+        self.__runForever = False
 
 
     def sendTelegramMessage(self, to_id=0, text=""):
@@ -58,8 +61,6 @@ class TelegramBOTtler(object):
         url = "https://api.telegram.org/bot"+self.__token+"/sendMessage?chat_id="+str(to_id)+"&text="+str(text)
         response = urlopen(url)
         data = json.loads(response.read().decode("utf-8"))
-        # TODO: remove this print only for debugging
-        print(json.dumps(data, indent=4, sort_keys=True, ensure_ascii=False))
         return data["ok"]
 
 
@@ -86,6 +87,35 @@ class TelegramBOTtler(object):
             except Exception as e:
                 pass
         return json_response
+
+
+    def __pollLoop(self):
+        while self.__runForever:
+            self.getUpdates()
+            t.sleep(1)
+
+
+    def run(self):
+        '''
+        Method to continously run getUpdates().
+        Starts a new thread where getUpdates() is called every second.
+        Will be stoped when ever the main progam finishes or when calling stop()
+        '''
+        if(self.__poolThread == None):
+            self.__runForever = True
+            self.__poolThread = threading.Thread(target=self.__pollLoop)
+            self.__poolThread.start()
+
+
+    def stop(self):
+        '''
+        Method to stop the polling loop for getting updates.
+        When calling this function, the thread, which calls getUpdates() 
+        every second will be stoped.
+        '''
+        if(self.__poolThread != None):
+            self.__runForever = False
+            self.__poolThread.join()
 
 
     def registerCallback(self, from_id="", callback_function=None):
