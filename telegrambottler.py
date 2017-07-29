@@ -1,4 +1,5 @@
 import sys
+import json
 
 if sys.version_info[0] == 2:
     from urllib import urlopen
@@ -7,7 +8,31 @@ elif sys.version_info[0] ==3:
 else:
     raise ValueError("This Python version is currently not supported. Try with Python2.7 or Python3.x instead.\n\nYour Python version is "+str(sys.version_info[0]) )
 
-import json
+
+
+class BOTtlerMessage(object):
+    '''
+    An object of this class will be passed as an argument to your callback.
+    '''
+    def __init__(self, bot, user_id, message_text):
+        self.__bot = bot
+        self.__user_id = user_id
+        self.__message_text = message_text
+    
+    def getMessageText(self):
+        '''
+        Can be used in your callback to retrieve certain 
+        information form the written message.
+        Return value is of type string.
+        '''
+        return self.__message_text
+
+    def answer(self, response_text):
+        '''
+        This method let's you easily responde to messages in your callback.
+        '''
+        return self.__bot.sendTelegramMessage(to_id=self.__user_id, text=response_text)
+
 
 
 class TelegramBOTtler(object):
@@ -50,14 +75,14 @@ class TelegramBOTtler(object):
         url = "https://api.telegram.org/bot"+self.__token+"/getUpdates"
         response = urlopen(url)
         json_response = json.loads(response.read().decode("utf-8"))
-
         for result in json_response["result"]:
             try:
                 message_text = result["message"]["text"]
                 from_id = result["message"]["from"]["id"]
                 if result["update_id"] > self.__update_id:
                     self.__update_id = result["update_id"]
-                    self.__callbacks[from_id](message_text, from_id=from_id)
+                    message = BOTtlerMessage(self, user_id=from_id, message_text=message_text)
+                    self.__callbacks[from_id](message)
             except Exception as e:
                 pass
         return json_response
@@ -69,19 +94,20 @@ class TelegramBOTtler(object):
         This method will be called every time the bot receives a new message
         from the user with `from_id`.
         It will get called like this:
-        `callback_function(message_text, from_id=from_id)`
-        So the call back get the received message text as first argument
-        and the id of the current user as second parameter.
+        `callback_function(message)`
+        The callback gets an object of type `BOTtlerMessage` passed.
+        In your callback you can then use the message object to parse the message text
+        and to some action based on that e.g. send back an answer.
         '''
         self.__callbacks[from_id] = callback_function
 
+
     def deleteCallback(self, from_id):
         '''
-        TODO: not yet tested
         Removes the `callback_function` for the user with `from_id`.
         Afterwards `callback_function` will get not called anymore
         when the bot receives a message for user with `from_id`.
         '''
         self.__callbacks.pop(from_id)
 
-        
+
